@@ -16,13 +16,19 @@ curl_opts=(-fsSL)
 
 sort_versions() {
 	sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
-		LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
+		LC_ALL=C sort -V | awk '{print $2}'
+}
+
+function is_greater() {
+	[[ "$(printf '%s\n' "$1" "$2" | sort_versions | head -n1)" == "$2" ]]
 }
 
 list_github_tags() {
-	git ls-remote --tags --refs "$REPO_URL" |
-		grep -o 'refs/tags/.*' | cut -d/ -f3- |
-		sed 's/^v//' # NOTE: You might want to adapt this sed to remove non-version strings from tags
+	for version in $(git ls-remote --tags --refs "$REPO_URL" | grep -o 'refs/tags/.*' | cut -d/ -f3- | sed 's/^v//'); do
+		if ! is_greater "0.15.0-rancher20" "$version" && [[ $version != docs* ]]; then
+			echo "$version"
+		fi
+	done
 }
 
 list_all_versions() {
