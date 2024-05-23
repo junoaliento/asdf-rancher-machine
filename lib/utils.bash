@@ -34,11 +34,11 @@ download_release() {
 	version="$1"
 
 	case "$(uname -m)" in
-		aarch64* | arm64) architecture="arm64" ;;
-		x86_64*) architecture="amd64" ;;
-		*)
-			fail "Unsupported architecture ($architecture)"
-			;;
+	aarch64* | arm64) architecture="arm64" ;;
+	x86_64*) architecture="amd64" ;;
+	*)
+		fail "Unsupported architecture ($architecture)"
+		;;
 	esac
 
 	mkdir -p "$ASDF_DOWNLOAD_PATH"
